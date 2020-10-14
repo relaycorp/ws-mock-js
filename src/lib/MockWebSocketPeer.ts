@@ -1,10 +1,11 @@
 import { EventEmitter } from 'events';
 import { Socket } from 'net';
 
+import { Data as WSData } from 'ws';
 import { MockWebSocketConnection } from './MockWebSocketConnection';
 import { WebSocketCloseMessage } from './WebSocketCloseMessage';
 
-export class MockWebSocketPeer extends EventEmitter {
+export abstract class MockWebSocketPeer extends EventEmitter {
   protected readonly socket: Socket;
 
   constructor(protected peerConnection: MockWebSocketConnection) {
@@ -18,7 +19,7 @@ export class MockWebSocketPeer extends EventEmitter {
   }
 
   get wasConnectionClosed(): boolean {
-    return this.peerConnection.ownCloseFrame !== null;
+    return this.peerConnection.closeFrame !== null;
   }
 
   public disconnect(code?: number, reason?: string): void {
@@ -38,32 +39,23 @@ export class MockWebSocketPeer extends EventEmitter {
     });
   }
 
-  public async receive(): Promise<Buffer | string> {
+  public async receive(): Promise<WSData> {
     this.requireConnectionStillOpen();
 
-    const lastMessage = this.getLastMessage();
+    const lastMessage = this.popLastPeerMessage();
     if (lastMessage) {
       return lastMessage;
     }
 
-    const message = await waitForEvent<Buffer | string>(
-      'messageSent',
-      this.peerConnection.serverEvents,
-    );
-    const index = this.peerConnection.messagesSentByServer.indexOf(message);
-    this.peerConnection.messagesSentByServer.splice(index, 1);
-    return message;
+    return this.peerConnection.getLastMessageSent();
   }
 
-  public getLastMessage(): Buffer | string | undefined {
-    return this.peerConnection.messagesSentByServer.pop() as Buffer | string;
+  public popLastPeerMessage(): WSData | undefined {
+    return this.peerConnection.popLastMessage();
   }
 
-  public async waitForClose(): Promise<WebSocketCloseMessage> {
-    if (this.peerConnection.ownCloseFrame) {
-      return this.peerConnection.ownCloseFrame;
-    }
-    return waitForEvent('close', this.peerConnection.serverEvents);
+  public async waitForPeerClosure(): Promise<WebSocketCloseMessage> {
+    return this.peerConnection.getCloseFrameWhenAvailable();
   }
 
   private requireConnectionStillOpen(): void {
@@ -71,8 +63,4 @@ export class MockWebSocketPeer extends EventEmitter {
       throw new Error('Connection was already closed');
     }
   }
-}
-
-async function waitForEvent<T>(eventName: string, eventEmitter: EventEmitter): Promise<T> {
-  return new Promise((resolve) => eventEmitter.once(eventName, resolve));
 }
