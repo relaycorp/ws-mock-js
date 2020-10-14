@@ -6,6 +6,8 @@ tslint.json
 .prettierignore
 .editorconfig
 .releaserc.yml
+.kodiak.toml
+typedoc.json
 
 .vscode/
 .idea/
