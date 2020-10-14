@@ -24,14 +24,6 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run static-checks
-      - run: npm run build
-
-      - name: Upload build
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: build/
 
   release:
     needs: ci
@@ -49,11 +41,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - name: Download build
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build/
+      - run: npm run build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
