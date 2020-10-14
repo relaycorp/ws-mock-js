@@ -1,21 +1,12 @@
 import { EventEmitter } from 'events';
-import { Socket } from 'net';
 
 import { Data as WSData } from 'ws';
 import { CloseFrame } from './CloseFrame';
 import { MockConnection } from './MockConnection';
 
 export abstract class MockPeer extends EventEmitter {
-  protected readonly socket: Socket;
-
   constructor(protected peerConnection: MockConnection) {
     super();
-
-    this.socket = new Socket();
-    this.socket.on('error', (hadError) => {
-      // tslint:disable-next-line:no-console
-      console.log({ hadError });
-    });
   }
 
   get wasConnectionClosed(): boolean {
