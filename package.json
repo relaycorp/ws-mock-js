@@ -43,7 +43,6 @@
   },
   "prettier": "@relaycorp/shared-config/.prettierrc.json",
   "publishConfig": {
-    "access": "public",
-    "tag": "dev"
+    "access": "public"
   }
 }
