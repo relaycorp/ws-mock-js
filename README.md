@@ -14,7 +14,7 @@ You should initialise `MockPoWebClient` by passing the WebSocket server to be te
 
 ```javascript
   test('Challenge should be sent as soon as client connects', async () => {
-    const client = new MockPoWebClient(mockWSServer);
+    const client = new MockPoWebClient(wsServer);
     await client.connect();
 
     const challengeSerialized = await client.receive();
