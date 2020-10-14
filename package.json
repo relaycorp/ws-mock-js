@@ -29,7 +29,12 @@
   "engines": {
     "node": ">=10"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ws": "^7.3.1"
+  },
+  "peerDependencies": {
+    "ws": ">= 7.3.1 < 2"
+  },
   "devDependencies": {
     "@relaycorp/shared-config": "^1.4.5",
     "@types/ws": "^7.2.7",
