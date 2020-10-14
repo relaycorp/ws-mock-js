@@ -2,11 +2,11 @@ import { EventEmitter } from 'events';
 import { Duplex } from 'stream';
 import { Data as WSData } from 'ws';
 
-import { WebSocketCloseMessage } from './WebSocketCloseMessage';
+import { CloseFrame } from './CloseFrame';
 
-export class MockWebSocketConnection extends EventEmitter {
+export class MockConnection extends EventEmitter {
   // tslint:disable-next-line:readonly-keyword
-  protected ownCloseFrame: WebSocketCloseMessage | null = null;
+  protected ownCloseFrame: CloseFrame | null = null;
   // tslint:disable-next-line:readonly-array
   protected readonly messagesSent: WSData[] = [];
   protected readonly serverEvents = new EventEmitter();
@@ -42,14 +42,14 @@ export class MockWebSocketConnection extends EventEmitter {
   /**
    * @internal
    */
-  get closeFrame(): WebSocketCloseMessage | null {
+  get closeFrame(): CloseFrame | null {
     return this.ownCloseFrame;
   }
 
   /**
    * @internal
    */
-  public async getCloseFrameWhenAvailable(): Promise<WebSocketCloseMessage> {
+  public async getCloseFrameWhenAvailable(): Promise<CloseFrame> {
     if (this.ownCloseFrame) {
       return this.ownCloseFrame;
     }

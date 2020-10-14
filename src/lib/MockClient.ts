@@ -1,15 +1,15 @@
 import { IncomingMessage } from 'http';
 import { Server as WSServer } from 'ws';
 
-import { MockWebSocketConnection } from './MockWebSocketConnection';
-import { MockWebSocketPeer } from './MockWebSocketPeer';
+import { MockConnection } from './MockConnection';
+import { MockPeer } from './MockPeer';
 
-export class MockWebSocketClient extends MockWebSocketPeer {
+export class MockClient extends MockPeer {
   constructor(
     private wsServer: WSServer,
     private headers: { readonly [key: string]: string } = {},
   ) {
-    super(new MockWebSocketConnection());
+    super(new MockConnection());
   }
 
   public async connect(): Promise<void> {

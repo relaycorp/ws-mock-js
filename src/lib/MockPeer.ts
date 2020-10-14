@@ -2,13 +2,13 @@ import { EventEmitter } from 'events';
 import { Socket } from 'net';
 
 import { Data as WSData } from 'ws';
-import { MockWebSocketConnection } from './MockWebSocketConnection';
-import { WebSocketCloseMessage } from './WebSocketCloseMessage';
+import { CloseFrame } from './CloseFrame';
+import { MockConnection } from './MockConnection';
 
-export abstract class MockWebSocketPeer extends EventEmitter {
+export abstract class MockPeer extends EventEmitter {
   protected readonly socket: Socket;
 
-  constructor(protected peerConnection: MockWebSocketConnection) {
+  constructor(protected peerConnection: MockConnection) {
     super();
 
     this.socket = new Socket();
@@ -54,7 +54,7 @@ export abstract class MockWebSocketPeer extends EventEmitter {
     return this.peerConnection.popLastMessage();
   }
 
-  public async waitForPeerClosure(): Promise<WebSocketCloseMessage> {
+  public async waitForPeerClosure(): Promise<CloseFrame> {
     return this.peerConnection.getCloseFrameWhenAvailable();
   }
 

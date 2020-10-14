@@ -1,4 +1,4 @@
-export { MockWebSocketClient } from './lib/MockWebSocketClient';
-export { MockWebSocketConnection } from './lib/MockWebSocketConnection';
-export { MockWebSocketPeer } from './lib/MockWebSocketPeer';
-export { WebSocketCloseMessage } from './lib/WebSocketCloseMessage';
+export { MockClient } from './lib/MockClient';
+export { MockConnection } from './lib/MockConnection';
+export { MockPeer } from './lib/MockPeer';
+export { CloseFrame } from './lib/CloseFrame';

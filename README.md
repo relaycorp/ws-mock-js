@@ -10,11 +10,11 @@ npm install @relaycorp/ws-mock
 
 ## Using the mock client
 
-You should initialise `MockWebSocketClient` by passing the WebSocket server to be tested and then call `client.connect()` to initiate the connection. From that point you can interact with the server. For example:
+You should initialise `MockClient` by passing the WebSocket server to be tested and then call `client.connect()` to initiate the connection. From that point you can interact with the server. For example:
 
 ```javascript
   test('Challenge should be sent as soon as client connects', async () => {
-    const client = new MockWebSocketClient(wsServer);
+    const client = new MockClient(wsServer);
     await client.connect();
 
     const challengeSerialized = await client.receive();
