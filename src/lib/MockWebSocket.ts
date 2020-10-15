@@ -6,6 +6,9 @@ import { CloseFrame } from './CloseFrame';
 
 export class MockWebSocket extends EventEmitter {
   // tslint:disable-next-line:readonly-keyword
+  public binaryType: 'nodebuffer' | 'arraybuffer' = 'nodebuffer';
+
+  // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
   // tslint:disable-next-line:readonly-array
   protected readonly messagesSent: WSData[] = [];
