@@ -43,3 +43,14 @@ Simply initialise `MockServer` with the `ws` client connection you wish to test.
 ```
 
 You'll find [real-world examples in relaycorp/relaynet-poweb-js](https://github.com/relaycorp/relaynet-poweb-js/search?l=TypeScript&q=%22%40relaycorp%2Fws-mock%22).
+
+## Using streams
+
+When using streams in the unit under test, make sure to mock the `createWebSocketStream` function in `ws`. Here's an example with Jest:
+
+```javascript
+import { createMockWebSocketStream } from '@relaycorp/ws-mock';
+import WebSocket from 'ws';
+
+jest.spyOn(WebSocket, 'createWebSocketStream').mockImplementation(createMockWebSocketStream);
+```
