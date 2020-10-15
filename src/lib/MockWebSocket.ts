@@ -4,23 +4,23 @@ import { Data as WSData } from 'ws';
 
 import { CloseFrame } from './CloseFrame';
 
-export class MockConnection extends EventEmitter {
+export class MockWebSocket extends EventEmitter {
   // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
   // tslint:disable-next-line:readonly-array
   protected readonly messagesSent: WSData[] = [];
-  protected readonly serverEvents = new EventEmitter();
+  protected readonly ownEvents = new EventEmitter();
 
   public send(data: WSData): void {
     this.messagesSent.push(data);
-    this.serverEvents.emit('messageSent', data);
+    this.ownEvents.emit('messageSent', data);
   }
 
   /**
    * @internal
    */
   public async getLastMessageSent(): Promise<WSData> {
-    const message = await waitForEvent<Buffer | string>('messageSent', this.serverEvents);
+    const message = await waitForEvent<WSData>('messageSent', this.ownEvents);
     const index = this.messagesSent.indexOf(message);
     this.messagesSent.splice(index, 1);
     return message;
@@ -36,7 +36,7 @@ export class MockConnection extends EventEmitter {
   public close(code?: number, reason?: string): void {
     // tslint:disable-next-line:no-object-mutation
     this.ownCloseFrame = { code, reason };
-    this.serverEvents.emit('close', this.ownCloseFrame);
+    this.ownEvents.emit('close', this.ownCloseFrame);
   }
 
   /**
@@ -53,7 +53,7 @@ export class MockConnection extends EventEmitter {
     if (this.ownCloseFrame) {
       return this.ownCloseFrame;
     }
-    return waitForEvent('close', this.serverEvents);
+    return waitForEvent('close', this.ownEvents);
   }
 
   public makeDuplex(): Duplex {

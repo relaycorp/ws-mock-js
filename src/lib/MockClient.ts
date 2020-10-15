@@ -2,7 +2,6 @@ import { IncomingMessage } from 'http';
 import { Socket } from 'net';
 import { Server as WSServer } from 'ws';
 
-import { MockConnection } from './MockConnection';
 import { MockPeer } from './MockPeer';
 
 export class MockClient extends MockPeer {
@@ -12,7 +11,7 @@ export class MockClient extends MockPeer {
     private wsServer: WSServer,
     private headers: { readonly [key: string]: string } = {},
   ) {
-    super(new MockConnection());
+    super();
 
     this.socket = new Socket();
     this.socket.on('error', (hadError) => {
@@ -30,7 +29,7 @@ export class MockClient extends MockPeer {
     };
     return new Promise((resolve) => {
       this.wsServer.once('connection', resolve);
-      this.wsServer.emit('connection', this.peerConnection, incomingMessage);
+      this.wsServer.emit('connection', this.peerWebSocket, incomingMessage);
     });
   }
 }

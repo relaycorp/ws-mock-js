@@ -2,31 +2,29 @@ import { EventEmitter } from 'events';
 
 import { Data as WSData } from 'ws';
 import { CloseFrame } from './CloseFrame';
-import { MockConnection } from './MockConnection';
+import { MockWebSocket } from './MockWebSocket';
 
 export abstract class MockPeer extends EventEmitter {
-  constructor(protected peerConnection: MockConnection) {
-    super();
-  }
+  protected readonly peerWebSocket = new MockWebSocket();
 
   get wasConnectionClosed(): boolean {
-    return this.peerConnection.closeFrame !== null;
+    return this.peerWebSocket.closeFrame !== null;
   }
 
   public disconnect(code?: number, reason?: string): void {
-    this.peerConnection.emit('close', code, reason);
+    this.peerWebSocket.emit('close', code, reason);
   }
 
   public abort(error: Error): void {
-    this.peerConnection.emit('error', error);
+    this.peerWebSocket.emit('error', error);
   }
 
   public async send(message: Buffer | string): Promise<void> {
     this.requireConnectionStillOpen();
 
     return new Promise((resolve) => {
-      this.peerConnection.once('message', resolve);
-      this.peerConnection.emit('message', message);
+      this.peerWebSocket.once('message', resolve);
+      this.peerWebSocket.emit('message', message);
     });
   }
 
@@ -38,15 +36,15 @@ export abstract class MockPeer extends EventEmitter {
       return lastMessage;
     }
 
-    return this.peerConnection.getLastMessageSent();
+    return this.peerWebSocket.getLastMessageSent();
   }
 
   public popLastPeerMessage(): WSData | undefined {
-    return this.peerConnection.popLastMessage();
+    return this.peerWebSocket.popLastMessage();
   }
 
   public async waitForPeerClosure(): Promise<CloseFrame> {
-    return this.peerConnection.getCloseFrameWhenAvailable();
+    return this.peerWebSocket.getCloseFrameWhenAvailable();
   }
 
   private requireConnectionStillOpen(): void {
