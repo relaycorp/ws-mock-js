@@ -51,6 +51,7 @@ test('Server message should be played back', async () => {
     ),
   ]);
 
+  // Check that the client sent the message back to the server:
   const clientResponse = await mockServer.receive();
   expect(clientResponse).toEqual(messageToEcho);
 });
