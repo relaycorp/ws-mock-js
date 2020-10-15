@@ -46,3 +46,18 @@ export class SendMessageAction extends MockServerAction {
     await super.run(mockServer);
   }
 }
+
+export class ReceiveMessageAction extends MockServerAction {
+  // tslint:disable-next-line:readonly-keyword
+  protected _message: Data | null = null;
+
+  get message(): Data | null {
+    return this._message;
+  }
+
+  public async run(mockServer: MockServer): Promise<void> {
+    // tslint:disable-next-line:no-object-mutation
+    this._message = await mockServer.receive();
+    await super.run(mockServer);
+  }
+}
