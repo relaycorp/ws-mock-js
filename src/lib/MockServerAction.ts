@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 
 import { Data } from 'ws';
-import { CloseFrame } from './CloseFrame';
+
 import { MockServer } from './MockServer';
 
 export abstract class MockServerAction {
@@ -26,12 +26,12 @@ export class AcceptConnectionAction extends MockServerAction {
 }
 
 export class CloseConnectionAction extends MockServerAction {
-  constructor(protected readonly closeFrame?: CloseFrame) {
+  constructor(protected readonly code: number = 1000, protected readonly reason?: string) {
     super();
   }
 
   public async run(mockServer: MockServer): Promise<void> {
-    await mockServer.close(this.closeFrame?.code, this.closeFrame?.reason);
+    await mockServer.close(this.code, this.reason);
     await super.run(mockServer);
   }
 }
