@@ -1,17 +1,16 @@
-import { EventEmitter } from 'events';
-
 import { Data as WSData } from 'ws';
+
 import { CloseFrame } from './CloseFrame';
 import { MockWebSocket } from './MockWebSocket';
 
-export abstract class MockPeer extends EventEmitter {
+export abstract class MockPeer {
   protected readonly peerWebSocket = new MockWebSocket();
 
   get wasConnectionClosed(): boolean {
     return this.peerWebSocket.closeFrame !== null;
   }
 
-  public disconnect(code?: number, reason?: string): void {
+  public close(code?: number, reason?: string): void {
     this.peerWebSocket.emit('close', code, reason);
   }
 
@@ -19,12 +18,14 @@ export abstract class MockPeer extends EventEmitter {
     this.peerWebSocket.emit('error', error);
   }
 
-  public async send(message: Buffer | string): Promise<void> {
+  public async send(message: WSData): Promise<void> {
     this.requireConnectionStillOpen();
 
+    const messageSerialized =
+      typeof message === 'string' ? message : this.convertBinaryType(message);
     return new Promise((resolve) => {
       this.peerWebSocket.once('message', resolve);
-      this.peerWebSocket.emit('message', message);
+      this.peerWebSocket.emit('message', messageSerialized);
     });
   }
 
@@ -45,6 +46,21 @@ export abstract class MockPeer extends EventEmitter {
 
   public async waitForPeerClosure(): Promise<CloseFrame> {
     return this.peerWebSocket.getCloseFrameWhenAvailable();
+  }
+
+  get peerCloseFrame(): CloseFrame | null {
+    return this.peerWebSocket.closeFrame;
+  }
+
+  protected convertBinaryType(
+    message: Buffer | ArrayBuffer | readonly Buffer[],
+  ): Buffer | ArrayBuffer | readonly Buffer[] {
+    const binaryType = this.peerWebSocket.binaryType;
+    if (binaryType === 'nodebuffer') {
+      return Buffer.isBuffer(message) ? message : Buffer.from(message);
+    }
+
+    throw new Error(`Unsupported WebSocket.binaryType (${binaryType}); feel free to open a PR`);
   }
 
   private requireConnectionStillOpen(): void {
