@@ -9,6 +9,9 @@ export class MockServer extends MockPeer {
 
   public async runActions(...actions: readonly MockServerAction[]): Promise<void> {
     for (const action of actions) {
+      if (this.wasConnectionClosed) {
+        break;
+      }
       await action.run(this);
     }
   }
