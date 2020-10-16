@@ -37,6 +37,10 @@ export class MockWebSocket extends EventEmitter {
   }
 
   public close(code?: number, reason?: string): void {
+    if (this.ownCloseFrame) {
+      throw new Error('Connection closure was already initiated');
+    }
+
     // tslint:disable-next-line:no-object-mutation
     this.ownCloseFrame = { code, reason };
     this.ownEvents.emit('close', this.ownCloseFrame);
