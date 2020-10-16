@@ -15,6 +15,9 @@ export abstract class MockServerAction {
   public async run(_mockServer: MockServer): Promise<void> {
     // tslint:disable-next-line:no-object-mutation
     this._wasRun = true;
+
+    // Allow enough time for the client to process any event emitted by the action
+    await waitForSetImmediate();
   }
 }
 
@@ -60,4 +63,8 @@ export class ReceiveMessageAction extends MockServerAction {
     this._message = await mockServer.receive();
     await super.run(mockServer);
   }
+}
+
+function waitForSetImmediate(): Promise<void> {
+  return new Promise((resolve) => setImmediate(resolve));
 }
