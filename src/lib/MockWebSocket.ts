@@ -69,7 +69,7 @@ export class MockWebSocket extends EventEmitter {
     const duplex = new Duplex({
       objectMode: true,
       read(_size: number): void {
-        connection.on('message', (message) => {
+        connection.once('message', (message) => {
           duplex.push(message);
         });
       },
