@@ -65,6 +65,16 @@ export class ReceiveMessageAction extends MockServerAction {
   }
 }
 
+export class EmitClientErrorAction extends MockServerAction {
+  constructor(protected readonly error: Error) {
+    super();
+  }
+
+  public async run(mockServer: MockServer): Promise<void> {
+    await mockServer.abort(this.error);
+  }
+}
+
 function waitForSetImmediate(): Promise<void> {
   return new Promise((resolve) => setImmediate(resolve));
 }
