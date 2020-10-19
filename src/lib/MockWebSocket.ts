@@ -68,7 +68,7 @@ export class MockWebSocket extends EventEmitter {
     const connection = this;
     const duplex = new Duplex({
       objectMode: true,
-      destroy(error: Error | null, callback: (error: Error | null) => void) {
+      destroy(error: Error | null, callback: (error: Error | null) => void): void {
         if (!connection.ownCloseFrame) {
           connection.emit('close', 1006);
         }
