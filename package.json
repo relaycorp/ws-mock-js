@@ -33,7 +33,7 @@
     "ws": "^7.4.1"
   },
   "peerDependencies": {
-    "ws": ">= 7.3.1 < 2"
+    "ws": ">= 7.4.1 < 8"
   },
   "devDependencies": {
     "@relaycorp/shared-config": "^1.4.7",
