@@ -30,7 +30,7 @@
     "node": ">=10"
   },
   "dependencies": {
-    "ws": "^7.4.1"
+    "ws": "^7.4.2"
   },
   "peerDependencies": {
     "ws": ">= 7.4.1 < 8"
