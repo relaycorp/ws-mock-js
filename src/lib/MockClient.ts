@@ -10,6 +10,7 @@ export class MockClient extends MockPeer {
   constructor(
     private wsServer: WSServer,
     private headers: { readonly [key: string]: string } = {},
+    private url: string = '/',
   ) {
     super();
 
@@ -27,6 +28,9 @@ export class MockClient extends MockPeer {
       ...incomingMessage.headers,
       ...this.headers,
     };
+    // tslint:disable-next-line:no-object-mutation
+    incomingMessage.url = this.url;
+
     return new Promise((resolve) => {
       this.wsServer.once('connection', resolve);
       this.wsServer.emit('connection', this.peerWebSocket, incomingMessage);
