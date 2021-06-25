@@ -32,16 +32,16 @@ export abstract class MockPeer {
   public async receive(): Promise<WSData> {
     this.requireConnectionStillOpen();
 
-    const lastMessage = this.popLastPeerMessage();
-    if (lastMessage) {
-      return lastMessage;
+    const oldestMessage = this.popOldestPeerMessage();
+    if (oldestMessage) {
+      return oldestMessage;
     }
 
     return this.peerWebSocket.getLastMessageSent();
   }
 
-  public popLastPeerMessage(): WSData | undefined {
-    return this.peerWebSocket.popLastMessage();
+  public popOldestPeerMessage(): WSData | undefined {
+    return this.peerWebSocket.popOldestMessage();
   }
 
   public async waitForPeerClosure(): Promise<CloseFrame> {
