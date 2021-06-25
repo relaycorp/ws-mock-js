@@ -32,8 +32,8 @@ export class MockWebSocket extends EventEmitter {
   /**
    * @internal
    */
-  public popLastMessage(): WSData | undefined {
-    return this.messagesSent.pop();
+  public popOldestMessage(): WSData | undefined {
+    return this.messagesSent.shift();
   }
 
   public close(code?: number, reason?: string): void {
