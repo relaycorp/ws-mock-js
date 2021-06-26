@@ -10,7 +10,7 @@ npm install @relaycorp/ws-mock
 
 ## Using the mock client
 
-You should initialise `MockClient` by passing the `ws` server to be tested and then call `client.connect()` to initiate the connection. From that point you can interact with the server. For example:
+You'd use a mock client when you need to test a server. You should initialise `MockClient` by passing the `ws` server to be tested and then call `client.connect()` to initiate the connection. From that point you can interact with the server. For example:
 
 ```javascript
 test('Challenge should be sent as soon as client connects', async () => {
@@ -26,7 +26,7 @@ You'll find real-world examples in [relaycorp/relaynet-internet-gateway](https:/
 
 ## Using the mock server
 
-You basically need to initialise `MockServer` and replace the default export from `ws` with a mock WebSocket. Here's an example with Jest:
+You'd use a mock server when you need to test a client. You basically need to initialise `MockServer` and replace the default export from `ws` with a mock WebSocket. Here's an example with Jest:
 
 ```javascript
 let mockServer: MockServer;
