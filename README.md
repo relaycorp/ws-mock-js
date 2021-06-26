@@ -22,7 +22,7 @@ test('Challenge should be sent as soon as client connects', async () => {
 });
 ```
 
-You'll find [real-world examples in relaycorp/relaynet-internet-gateway](https://github.com/relaycorp/relaynet-internet-gateway/search?l=TypeScript&q=%22%40relaycorp%2Fws-mock%22).
+You'll find real-world examples in [relaycorp/relaynet-internet-gateway](https://github.com/relaycorp/relaynet-internet-gateway/search?l=TypeScript&q=%22%40relaycorp%2Fws-mock%22) and [relaycorp/awala-gateway-desktop](https://github.com/relaycorp/awala-gateway-desktop/search?l=TypeScript&q=%22%40relaycorp%2Fws-mock%22).
 
 ## Using the mock server
 
