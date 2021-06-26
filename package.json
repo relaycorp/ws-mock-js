@@ -30,6 +30,7 @@
     "node": ">=12"
   },
   "dependencies": {
+    "buffer-to-arraybuffer": "0.0.6",
     "ws": "^7.5.0"
   },
   "peerDependencies": {

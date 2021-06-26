@@ -1,3 +1,4 @@
+import bufferToArray from 'buffer-to-arraybuffer';
 import { Data as WSData } from 'ws';
 
 import { CloseFrame } from './CloseFrame';
@@ -18,11 +19,13 @@ export abstract class MockPeer {
     this.peerWebSocket.emit('error', error);
   }
 
-  public async send(message: string | Buffer | ArrayBuffer): Promise<void> {
+  public async send(message: WSData): Promise<void> {
     this.requireConnectionStillOpen();
 
     const messageSerialized =
-      typeof message === 'string' ? message : this.convertBinaryType(message);
+      typeof message === 'string' || Array.isArray(message)
+        ? message
+        : this.convertBinaryType(message);
     return new Promise((resolve) => {
       this.peerWebSocket.once('message', resolve);
       this.peerWebSocket.emit('message', messageSerialized);
@@ -52,13 +55,19 @@ export abstract class MockPeer {
     return this.peerWebSocket.closeFrame;
   }
 
-  protected convertBinaryType(message: Buffer | ArrayBuffer): Buffer {
-    const binaryType = this.peerWebSocket.binaryType;
-    if (binaryType === 'nodebuffer') {
+  /**
+   * Mimic the conversion that `ws` would do on binary frames.
+   *
+   * @param message
+   *
+   * See https://github.com/websockets/ws/blob/master/doc/ws.md#websocketbinarytype
+   */
+  protected convertBinaryType(message: Buffer | ArrayBuffer): Buffer | ArrayBuffer {
+    if (this.peerWebSocket.binaryType === 'nodebuffer') {
       return Buffer.isBuffer(message) ? message : Buffer.from(message);
     }
 
-    throw new Error(`Unsupported WebSocket.binaryType (${binaryType}); feel free to open a PR`);
+    return Buffer.isBuffer(message) ? bufferToArray(message) : message;
   }
 
   private requireConnectionStillOpen(): void {
