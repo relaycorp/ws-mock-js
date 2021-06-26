@@ -27,7 +27,7 @@
     "clean": "del-cli build test"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "dependencies": {
     "ws": "^7.5.0"
