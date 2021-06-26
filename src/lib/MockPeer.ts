@@ -18,7 +18,7 @@ export abstract class MockPeer {
     this.peerWebSocket.emit('error', error);
   }
 
-  public async send(message: WSData): Promise<void> {
+  public async send(message: string | Buffer | ArrayBuffer): Promise<void> {
     this.requireConnectionStillOpen();
 
     const messageSerialized =
@@ -52,9 +52,7 @@ export abstract class MockPeer {
     return this.peerWebSocket.closeFrame;
   }
 
-  protected convertBinaryType(
-    message: Buffer | ArrayBuffer | readonly Buffer[],
-  ): Buffer | ArrayBuffer | readonly Buffer[] {
+  protected convertBinaryType(message: Buffer | ArrayBuffer): Buffer {
     const binaryType = this.peerWebSocket.binaryType;
     if (binaryType === 'nodebuffer') {
       return Buffer.isBuffer(message) ? message : Buffer.from(message);
