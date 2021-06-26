@@ -1,6 +1,6 @@
 # @relaycorp/ws-mock
 
-Mock client and server to unit test the NPM package [`ws`](https://www.npmjs.com/package/ws).
+Mock client and server to unit test servers and clients powered by [`ws`](https://www.npmjs.com/package/ws).
 
 ## Install
 
