@@ -9,7 +9,7 @@ jobs:
       matrix:
         node: [10, 12]
         os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     name: "ci-nodejs${{ matrix.node }}-${{ matrix.os }}"
     steps:
       - uses: actions/checkout@v1
@@ -24,6 +24,7 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run static-checks
+      - run: npm run build
 
   release:
     needs: ci
