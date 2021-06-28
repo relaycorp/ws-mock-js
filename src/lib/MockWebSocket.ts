@@ -73,15 +73,15 @@ export class MockWebSocket extends EventEmitter {
         callback(error);
       },
       read(_size: number): void {
-        connection.once('message', (message) => {
-          duplex.push(message);
-        });
+        // Do nothing. We're already recording incoming messages.
       },
       write(chunk: any, _encoding: string, callback: (error?: Error | null) => void): void {
         connection.send(chunk);
         callback();
       },
     });
+
+    this.on('message', (message) => duplex.push(message));
 
     this.on('close', () => duplex.push(null));
 
