@@ -3,6 +3,7 @@ import { Data as WSData } from 'ws';
 
 import { CloseFrame } from './CloseFrame';
 import { MockWebSocket } from './MockWebSocket';
+import { PingOrPong } from './PingOrPong';
 
 export abstract class MockPeer {
   protected readonly peerWebSocket = new MockWebSocket();
@@ -53,6 +54,42 @@ export abstract class MockPeer {
 
   get peerCloseFrame(): CloseFrame | null {
     return this.peerWebSocket.closeFrame;
+  }
+
+  /**
+   * Send ping to peer and return ping data.
+   *
+   * @param data
+   */
+  public ping(data?: Buffer): Buffer {
+    const finalData = data ?? Buffer.from(Math.random().toString());
+    this.peerWebSocket.emit('ping', finalData);
+    return finalData;
+  }
+
+  /**
+   * Send pong to peer.
+   *
+   * @param data
+   */
+  public pong(data: Buffer): void {
+    this.peerWebSocket.emit('pong', data);
+  }
+
+  /**
+   * Return pings sent by peer.
+   */
+  get incomingPings(): readonly PingOrPong[] {
+    // Return a shallow copy to avoid race conditions if more pings are received
+    return [...this.peerWebSocket.outgoingPings];
+  }
+
+  /**
+   * Return pongs sent by peer.
+   */
+  get incomingPongs(): readonly PingOrPong[] {
+    // Return a shallow copy to avoid race conditions if more pings are received
+    return [...this.peerWebSocket.outgoingPongs];
   }
 
   /**

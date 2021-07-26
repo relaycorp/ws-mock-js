@@ -3,10 +3,16 @@ import { Duplex } from 'stream';
 import { Data as WSData } from 'ws';
 
 import { CloseFrame } from './CloseFrame';
+import { PingOrPong } from './PingOrPong';
 
 export class MockWebSocket extends EventEmitter {
   // tslint:disable-next-line:readonly-keyword
   public binaryType: 'nodebuffer' | 'arraybuffer' = 'nodebuffer';
+
+  // tslint:disable-next-line:readonly-array
+  public readonly outgoingPings: PingOrPong[] = [];
+  // tslint:disable-next-line:readonly-array
+  public readonly outgoingPongs: PingOrPong[] = [];
 
   // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
@@ -15,8 +21,28 @@ export class MockWebSocket extends EventEmitter {
   protected readonly ownEvents = new EventEmitter();
 
   public send(data: WSData): void {
+    this.requireOpenConnection();
+
     this.messagesSent.push(data);
     this.ownEvents.emit('messageSent', data);
+  }
+
+  public ping(data?: WSData, mask?: boolean, cb?: (err?: Error) => void): void {
+    this.requireOpenConnection();
+
+    this.outgoingPings.push({ data, cb, mask, date: new Date() });
+    if (cb) {
+      cb();
+    }
+  }
+
+  public pong(data?: WSData, mask?: boolean, cb?: (err?: Error) => void): void {
+    this.requireOpenConnection();
+
+    this.outgoingPongs.push({ data, cb, mask, date: new Date() });
+    if (cb) {
+      cb();
+    }
   }
 
   /**
@@ -37,9 +63,7 @@ export class MockWebSocket extends EventEmitter {
   }
 
   public close(code?: number, reason?: string): void {
-    if (this.ownCloseFrame) {
-      throw new Error('Connection closure was already initiated');
-    }
+    this.requireOpenConnection();
 
     // tslint:disable-next-line:no-object-mutation
     this.ownCloseFrame = { code, reason };
@@ -88,6 +112,12 @@ export class MockWebSocket extends EventEmitter {
     this.on('error', (error) => duplex.destroy(error));
 
     return duplex;
+  }
+
+  private requireOpenConnection(): void {
+    if (this.ownCloseFrame) {
+      throw new Error('Connection is not open (anymore)');
+    }
   }
 }
 
