@@ -7,6 +7,9 @@ import { MockPeer } from './MockPeer';
 export class MockClient extends MockPeer {
   protected readonly socket: Socket;
 
+  // tslint:disable-next-line:readonly-keyword
+  protected connected = false;
+
   constructor(
     private wsServer: WSServer,
     private headers: { readonly [key: string]: string } = {},
@@ -22,6 +25,10 @@ export class MockClient extends MockPeer {
   }
 
   public async connect(): Promise<void> {
+    if (this.connected) {
+      throw new Error('Cannot connect to server again');
+    }
+
     const incomingMessage = new IncomingMessage(this.socket);
     // tslint:disable-next-line:no-object-mutation
     incomingMessage.headers = {
@@ -31,6 +38,10 @@ export class MockClient extends MockPeer {
     // tslint:disable-next-line:no-object-mutation
     incomingMessage.url = this.url;
 
+    // tslint:disable-next-line:no-object-mutation
+    this.connected = true;
+
+    // Only return once the server's own `connection` event handler has been been executed
     return new Promise((resolve) => {
       this.wsServer.once('connection', resolve);
       this.wsServer.emit('connection', this.peerWebSocket, incomingMessage);
