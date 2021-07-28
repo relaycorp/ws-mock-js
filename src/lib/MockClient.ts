@@ -36,4 +36,18 @@ export class MockClient extends MockPeer {
       this.wsServer.emit('connection', this.peerWebSocket, incomingMessage);
     });
   }
+
+  /**
+   * Connect to server, run `callback` and close the connection.
+   *
+   * @param callback The function to execute whilst connected to server
+   */
+  public async use(callback: () => Promise<void>): Promise<void> {
+    await this.connect();
+    try {
+      await callback();
+    } finally {
+      this.close();
+    }
+  }
 }
