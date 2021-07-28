@@ -107,9 +107,9 @@ export class MockWebSocket extends EventEmitter {
 
     this.on('message', (message) => duplex.push(message));
 
-    this.on('close', () => duplex.push(null));
+    this.once('close', () => duplex.destroy());
 
-    this.on('error', (error) => duplex.destroy(error));
+    this.once('error', (error) => duplex.destroy(error));
 
     return duplex;
   }
