@@ -16,6 +16,9 @@ export class MockWebSocket extends EventEmitter {
 
   // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
+  // tslint:disable-next-line:readonly-keyword
+  protected _wasTerminated = false;
+
   // tslint:disable-next-line:readonly-array
   protected readonly messagesSent: WSData[] = [];
   protected readonly ownEvents = new EventEmitter();
@@ -87,13 +90,26 @@ export class MockWebSocket extends EventEmitter {
     return waitForEvent('close', this.ownEvents);
   }
 
+  public terminate(): void {
+    this.requireOpenConnection();
+    // tslint:disable-next-line:no-object-mutation
+    this._wasTerminated = true;
+    this.ownEvents.emit('termination');
+  }
+
+  get wasTerminated(): boolean {
+    return this._wasTerminated;
+  }
+
   public makeDuplex(): Duplex {
     // tslint:disable-next-line:no-this-assignment
     const connection = this;
     const duplex = new Duplex({
       objectMode: true,
       destroy(error: Error | null, callback: (error: Error | null) => void): void {
-        connection.emit('close', error ? 1006 : 1005);
+        if (!connection.wasTerminated) {
+          connection.emit('close', error ? 1006 : 1005);
+        }
         callback(error);
       },
       read(_size: number): void {
@@ -109,6 +125,8 @@ export class MockWebSocket extends EventEmitter {
 
     this.once('close', () => duplex.destroy());
 
+    this.ownEvents.once('termination', () => duplex.destroy());
+
     this.once('error', (error) => duplex.destroy(error));
 
     return duplex;
@@ -117,6 +135,9 @@ export class MockWebSocket extends EventEmitter {
   private requireOpenConnection(): void {
     if (this.ownCloseFrame) {
       throw new Error('Connection is not open (anymore)');
+    }
+    if (this.wasTerminated) {
+      throw new Error('Connection was terminated');
     }
   }
 }
