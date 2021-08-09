@@ -72,6 +72,7 @@ export class EmitClientErrorAction extends MockServerAction {
 
   public async run(mockServer: MockServer): Promise<void> {
     await mockServer.abort(this.error);
+    await super.run(mockServer);
   }
 }
 
