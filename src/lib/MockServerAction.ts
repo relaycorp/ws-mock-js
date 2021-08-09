@@ -1,6 +1,5 @@
 // tslint:disable:max-classes-per-file
 
-import { EventEmitter } from 'events';
 import { Data } from 'ws';
 
 import { MockServer } from './MockServer';
@@ -17,14 +16,8 @@ export abstract class MockServerAction {
     // tslint:disable-next-line:no-object-mutation
     this._wasRun = true;
 
-    // Allow enough time for the client to process any event emitted by the action. We would
-    // normally use setImmediate(), but we can't rely on timer functions because they may be
-    // mocked (e.g., `jest.useFakeTimers()`).
-    await new Promise((resolve) => {
-      const events = new EventEmitter();
-      events.once('done', resolve);
-      events.emit('done');
-    });
+    // Allow enough time for the client to process any event emitted by the action
+    await waitForSetImmediate();
   }
 }
 
@@ -80,4 +73,8 @@ export class EmitClientErrorAction extends MockServerAction {
   public async run(mockServer: MockServer): Promise<void> {
     await mockServer.abort(this.error);
   }
+}
+
+function waitForSetImmediate(): Promise<void> {
+  return new Promise((resolve) => setImmediate(resolve));
 }
