@@ -35,7 +35,7 @@ beforeEach(() => {
 });
 jest.mock('ws', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => mockServer.mockClientWebSocket),
+  default: jest.fn().mockImplementation(() => mockServer.client),
 }));
 
 test('Server message should be played back', async () => {

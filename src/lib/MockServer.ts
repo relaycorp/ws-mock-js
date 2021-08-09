@@ -1,10 +1,10 @@
-import WebSocket from 'ws';
 import { MockPeer } from './MockPeer';
 import { MockServerAction } from './MockServerAction';
+import { MockWebSocket } from './MockWebSocket';
 
 export class MockServer extends MockPeer {
-  get mockClientWebSocket(): WebSocket {
-    return this.peerWebSocket as any;
+  get client(): MockWebSocket {
+    return this.peerWebSocket;
   }
 
   public async runActions(...actions: readonly MockServerAction[]): Promise<void> {
