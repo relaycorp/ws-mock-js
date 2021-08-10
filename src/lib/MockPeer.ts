@@ -34,6 +34,7 @@ export abstract class MockPeer {
     this.wasAborted = true;
 
     this.peerWebSocket.emit('error', error);
+    this.close(1006);
   }
 
   public async send(message: WSData): Promise<void> {
