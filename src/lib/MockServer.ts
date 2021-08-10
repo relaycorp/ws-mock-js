@@ -10,7 +10,7 @@ export class MockServer extends MockPeer {
     clientPromise: Promise<T>,
     serverImplementation?: () => Promise<void>,
   ): Promise<T> {
-    const [clientResult] = await Promise.all([
+    const [clientResult, serverResult] = await Promise.allSettled([
       clientPromise,
       new Promise(async (resolve) => {
         this.peerWebSocket.emit('open');
@@ -31,6 +31,13 @@ export class MockServer extends MockPeer {
       }),
     ]);
 
-    return clientResult;
+    if (clientResult.status === 'rejected') {
+      throw clientResult.reason;
+    }
+    if (serverResult.status === 'rejected') {
+      throw serverResult.reason;
+    }
+
+    return clientResult.value;
   }
 }
