@@ -23,7 +23,7 @@ export class MockServer extends MockPeer {
         // Allow more time for the client to process the latest actions from the server
         await new Promise(setImmediate);
 
-        if (!this.didICloseConnection) {
+        if (!this.didICloseConnection && !this.didPeerCloseConnection) {
           this.close();
         }
 
