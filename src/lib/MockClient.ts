@@ -1,3 +1,5 @@
+// tslint:disable:readonly-keyword no-object-mutation
+
 import { IncomingMessage } from 'http';
 import { Socket } from 'net';
 import { Server as WSServer } from 'ws';
@@ -7,7 +9,6 @@ import { MockPeer } from './MockPeer';
 export class MockClient extends MockPeer {
   protected readonly socket: Socket;
 
-  // tslint:disable-next-line:readonly-keyword
   protected connected = false;
 
   constructor(
@@ -18,6 +19,7 @@ export class MockClient extends MockPeer {
     super();
 
     this.socket = new Socket();
+    // TODO: Propagate error somehow, instead of silencing it
     this.socket.on('error', (hadError) => {
       // tslint:disable-next-line:no-console
       console.log({ hadError });
@@ -30,15 +32,12 @@ export class MockClient extends MockPeer {
     }
 
     const incomingMessage = new IncomingMessage(this.socket);
-    // tslint:disable-next-line:no-object-mutation
     incomingMessage.headers = {
       ...incomingMessage.headers,
       ...this.headers,
     };
-    // tslint:disable-next-line:no-object-mutation
     incomingMessage.url = this.url;
 
-    // tslint:disable-next-line:no-object-mutation
     this.connected = true;
 
     // Only return once the server's own `connection` event handler has been been executed

@@ -1,3 +1,5 @@
+// tslint:disable:readonly-keyword no-object-mutation
+
 import bufferToArray from 'buffer-to-arraybuffer';
 import { Data as WSData } from 'ws';
 
@@ -8,10 +10,8 @@ import { PingOrPong } from './PingOrPong';
 export abstract class MockPeer {
   protected readonly peerWebSocket = new MockWebSocket();
 
-  // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
 
-  // tslint:disable-next-line:readonly-keyword
   protected wasAborted: boolean = false;
 
   get didPeerCloseConnection(): boolean {
@@ -23,14 +23,12 @@ export abstract class MockPeer {
   }
 
   public close(code: number = 1005, reason?: string): void {
-    // tslint:disable-next-line:readonly-keyword no-object-mutation
     this.ownCloseFrame = { code, reason };
 
     this.peerWebSocket.emit('close', code, reason);
   }
 
   public abort(error: Error): void {
-    // tslint:disable-next-line:no-object-mutation
     this.wasAborted = true;
 
     this.peerWebSocket.emit('error', error);

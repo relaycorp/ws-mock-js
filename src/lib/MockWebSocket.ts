@@ -1,3 +1,5 @@
+// tslint:disable:readonly-keyword readonly-array no-object-mutation
+
 import { EventEmitter } from 'events';
 import { Duplex } from 'stream';
 import { Data as WSData } from 'ws';
@@ -18,23 +20,16 @@ export class MockWebSocket extends EventEmitter {
   public readonly CLOSING = MockWebSocket.CLOSING;
   public readonly CLOSED = MockWebSocket.CLOSED;
 
-  // tslint:disable-next-line:readonly-keyword
   public binaryType: 'nodebuffer' | 'arraybuffer' = 'nodebuffer';
 
-  // tslint:disable-next-line:readonly-array
   public readonly outgoingPings: PingOrPong[] = [];
-  // tslint:disable-next-line:readonly-array
   public readonly outgoingPongs: PingOrPong[] = [];
 
-  // tslint:disable-next-line:readonly-keyword
   protected _readyState: number = MockWebSocket.CONNECTING;
 
-  // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
-  // tslint:disable-next-line:readonly-keyword
   protected _wasTerminated = false;
 
-  // tslint:disable-next-line:readonly-array
   protected readonly messagesSent: WSData[] = [];
   protected readonly ownEvents = new EventEmitter();
 
@@ -42,7 +37,6 @@ export class MockWebSocket extends EventEmitter {
     super();
 
     this.once('open', () => {
-      // tslint:disable-next-line:no-object-mutation
       this._readyState = MockWebSocket.OPEN;
     });
   }
@@ -96,10 +90,8 @@ export class MockWebSocket extends EventEmitter {
   public close(code?: number, reason?: string): void {
     this.requireOpenConnection();
 
-    // tslint:disable-next-line:no-object-mutation
     this._readyState = MockWebSocket.CLOSED;
 
-    // tslint:disable-next-line:no-object-mutation
     this.ownCloseFrame = { code, reason };
     this.ownEvents.emit('close', this.ownCloseFrame);
   }
@@ -124,10 +116,8 @@ export class MockWebSocket extends EventEmitter {
   public terminate(): void {
     this.requireOpenConnection();
 
-    // tslint:disable-next-line:no-object-mutation
     this._readyState = MockWebSocket.CLOSED;
 
-    // tslint:disable-next-line:no-object-mutation
     this._wasTerminated = true;
     this.ownEvents.emit('termination');
   }
