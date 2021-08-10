@@ -8,15 +8,31 @@ import { PingOrPong } from './PingOrPong';
 export abstract class MockPeer {
   protected readonly peerWebSocket = new MockWebSocket();
 
-  get wasConnectionClosed(): boolean {
-    return this.peerWebSocket.closeFrame !== null;
+  // tslint:disable-next-line:readonly-keyword
+  protected ownCloseFrame: CloseFrame | null = null;
+
+  // tslint:disable-next-line:readonly-keyword
+  protected wasAborted: boolean = false;
+
+  get didPeerCloseConnection(): boolean {
+    return this.peerWebSocket.closeFrame !== null || this.peerWebSocket.wasTerminated;
   }
 
-  public close(code?: number, reason?: string): void {
+  protected get didICloseConnection(): boolean {
+    return this.ownCloseFrame !== null || this.wasAborted;
+  }
+
+  public close(code: number = 1005, reason?: string): void {
+    // tslint:disable-next-line:readonly-keyword no-object-mutation
+    this.ownCloseFrame = { code, reason };
+
     this.peerWebSocket.emit('close', code, reason);
   }
 
   public abort(error: Error): void {
+    // tslint:disable-next-line:no-object-mutation
+    this.wasAborted = true;
+
     this.peerWebSocket.emit('error', error);
   }
 
@@ -108,7 +124,7 @@ export abstract class MockPeer {
   }
 
   private requireConnectionStillOpen(): void {
-    if (this.wasConnectionClosed) {
+    if (this.didPeerCloseConnection) {
       throw new Error('Connection was already closed');
     }
   }
