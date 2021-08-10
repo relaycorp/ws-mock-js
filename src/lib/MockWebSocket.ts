@@ -5,7 +5,19 @@ import { Data as WSData } from 'ws';
 import { CloseFrame } from './CloseFrame';
 import { PingOrPong } from './PingOrPong';
 
+const READY_STATES: readonly string[] = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
+
 export class MockWebSocket extends EventEmitter {
+  public static readonly CONNECTING = READY_STATES.indexOf('CONNECTING');
+  public static readonly OPEN = READY_STATES.indexOf('OPEN');
+  public static readonly CLOSING = READY_STATES.indexOf('CLOSING');
+  public static readonly CLOSED = READY_STATES.indexOf('CLOSED');
+
+  public readonly CONNECTING = MockWebSocket.CONNECTING;
+  public readonly OPEN = MockWebSocket.OPEN;
+  public readonly CLOSING = MockWebSocket.CLOSING;
+  public readonly CLOSED = MockWebSocket.CLOSED;
+
   // tslint:disable-next-line:readonly-keyword
   public binaryType: 'nodebuffer' | 'arraybuffer' = 'nodebuffer';
 
@@ -15,6 +27,9 @@ export class MockWebSocket extends EventEmitter {
   public readonly outgoingPongs: PingOrPong[] = [];
 
   // tslint:disable-next-line:readonly-keyword
+  protected _readyState: number = MockWebSocket.CONNECTING;
+
+  // tslint:disable-next-line:readonly-keyword
   protected ownCloseFrame: CloseFrame | null = null;
   // tslint:disable-next-line:readonly-keyword
   protected _wasTerminated = false;
@@ -22,6 +37,19 @@ export class MockWebSocket extends EventEmitter {
   // tslint:disable-next-line:readonly-array
   protected readonly messagesSent: WSData[] = [];
   protected readonly ownEvents = new EventEmitter();
+
+  constructor() {
+    super();
+
+    this.once('open', () => {
+      // tslint:disable-next-line:no-object-mutation
+      this._readyState = MockWebSocket.OPEN;
+    });
+  }
+
+  get readyState(): number {
+    return this._readyState;
+  }
 
   public send(data: WSData): void {
     this.requireOpenConnection();
@@ -69,6 +97,9 @@ export class MockWebSocket extends EventEmitter {
     this.requireOpenConnection();
 
     // tslint:disable-next-line:no-object-mutation
+    this._readyState = MockWebSocket.CLOSED;
+
+    // tslint:disable-next-line:no-object-mutation
     this.ownCloseFrame = { code, reason };
     this.ownEvents.emit('close', this.ownCloseFrame);
   }
@@ -92,6 +123,10 @@ export class MockWebSocket extends EventEmitter {
 
   public terminate(): void {
     this.requireOpenConnection();
+
+    // tslint:disable-next-line:no-object-mutation
+    this._readyState = MockWebSocket.CLOSED;
+
     // tslint:disable-next-line:no-object-mutation
     this._wasTerminated = true;
     this.ownEvents.emit('termination');
@@ -135,6 +170,7 @@ export class MockWebSocket extends EventEmitter {
   }
 
   private requireOpenConnection(): void {
+    // TODO: Use this.readyState
     if (this.ownCloseFrame) {
       throw new Error('Connection was closed');
     }
