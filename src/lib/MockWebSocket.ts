@@ -102,6 +102,8 @@ export class MockWebSocket extends EventEmitter {
   }
 
   public makeDuplex(): Duplex {
+    this.requireOpenConnection();
+
     // tslint:disable-next-line:no-this-assignment
     const connection = this;
     const duplex = new Duplex({
@@ -134,7 +136,7 @@ export class MockWebSocket extends EventEmitter {
 
   private requireOpenConnection(): void {
     if (this.ownCloseFrame) {
-      throw new Error('Connection is not open (anymore)');
+      throw new Error('Connection was closed');
     }
     if (this.wasTerminated) {
       throw new Error('Connection was terminated');
