@@ -8,11 +8,20 @@ import { MockWebSocket } from './MockWebSocket';
 import { PingOrPong } from './PingOrPong';
 
 export abstract class MockPeer {
-  protected readonly peerWebSocket = new MockWebSocket();
+  protected readonly peerWebSocket: MockWebSocket;
 
   protected ownCloseFrame: CloseFrame | null = null;
 
   protected wasAborted: boolean = false;
+
+  constructor() {
+    this.peerWebSocket = new MockWebSocket(() => {
+      if (!this.ownCloseFrame) {
+        // The closing handshake was initiated by the other peer
+        this.close();
+      }
+    });
+  }
 
   get didPeerCloseConnection(): boolean {
     return this.peerWebSocket.closeFrame !== null || this.peerWebSocket.wasTerminated;
@@ -32,7 +41,7 @@ export abstract class MockPeer {
     this.wasAborted = true;
 
     this.peerWebSocket.emit('error', error);
-    this.close(1006);
+    this.peerWebSocket.emit('close', 1006, 'Aborted from test');
   }
 
   public async send(message: WSData): Promise<void> {

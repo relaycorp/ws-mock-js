@@ -33,11 +33,18 @@ export class MockWebSocket extends EventEmitter {
   protected readonly messagesSent: WSData[] = [];
   protected readonly ownEvents = new EventEmitter();
 
-  constructor() {
+  constructor(protected readonly closingHandshakeCallback: () => void) {
     super();
 
     this.once('open', () => {
       this._readyState = MockWebSocket.OPEN;
+    });
+    this.once('close', (code) => {
+      if (this.readyState !== MockWebSocket.CLOSING && code !== 1006) {
+        // The closing handshake was initiated by the other peer
+        this.close();
+      }
+      this._readyState = MockWebSocket.CLOSED;
     });
   }
 
@@ -87,10 +94,12 @@ export class MockWebSocket extends EventEmitter {
     return this.messagesSent.shift();
   }
 
-  public close(code?: number, reason?: string): void {
+  public close(code = 1005, reason?: string): void {
     this.requireOpenConnection();
 
-    this._readyState = MockWebSocket.CLOSED;
+    this._readyState = MockWebSocket.CLOSING;
+
+    this.closingHandshakeCallback();
 
     this.ownCloseFrame = { code, reason };
     this.ownEvents.emit('close', this.ownCloseFrame);
@@ -133,12 +142,6 @@ export class MockWebSocket extends EventEmitter {
     const connection = this;
     const duplex = new Duplex({
       objectMode: true,
-      destroy(error: Error | null, callback: (error: Error | null) => void): void {
-        if (!connection.wasTerminated) {
-          connection.emit('close', error ? 1006 : 1005);
-        }
-        callback(error);
-      },
       read(_size: number): void {
         // Do nothing. We're already recording incoming messages.
       },
