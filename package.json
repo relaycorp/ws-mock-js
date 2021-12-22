@@ -22,6 +22,8 @@
     "static-checks": "run-p static-checks:*",
     "static-checks:lint": "tslint --project .",
     "static-checks:prettier": "prettier \"src/**/*.ts\" --list-different",
+    "test:ci:unit": "exit 0",
+    "test:integration": "exit 0",
     "cov": "run-s build test:unit && opn coverage/lcov-report/index.html",
     "doc-api": "typedoc src/index.ts --out build/docs/api",
     "clean": "del-cli build test"
