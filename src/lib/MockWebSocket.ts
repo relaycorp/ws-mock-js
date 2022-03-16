@@ -94,7 +94,7 @@ export class MockWebSocket extends EventEmitter {
     return this.messagesSent.shift();
   }
 
-  public close(code = 1005, reason?: string): void {
+  public close(code = 1005, reason?: Buffer): void {
     this.requireOpenConnection();
 
     this._readyState = MockWebSocket.CLOSING;
