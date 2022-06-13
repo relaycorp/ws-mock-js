@@ -153,9 +153,12 @@ export class MockWebSocket extends EventEmitter {
 
     this.on('message', (message) => duplex.push(message));
 
-    this.once('close', () => duplex.destroy());
-
-    this.ownEvents.once('termination', () => duplex.destroy());
+    const closeReadableStream = () => {
+      duplex.push(null); // Prevent ERR_STREAM_PREMATURE_CLOSE on Node.js 18+
+      duplex.destroy();
+    };
+    this.once('close', closeReadableStream);
+    this.ownEvents.once('termination', closeReadableStream);
 
     this.once('error', (error) => duplex.destroy(error));
 
