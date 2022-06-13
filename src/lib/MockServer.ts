@@ -1,5 +1,6 @@
 import { MockPeer } from './MockPeer';
 import { MockWebSocket } from './MockWebSocket';
+import { MockWSError } from './MockWSError';
 
 export class MockServer extends MockPeer {
   get client(): MockWebSocket {
@@ -32,10 +33,10 @@ export class MockServer extends MockPeer {
     ]);
 
     if (clientResult.status === 'rejected') {
-      throw clientResult.reason;
+      throw new MockWSError(clientResult.reason, 'Client promise rejected');
     }
     if (serverResult.status === 'rejected') {
-      throw serverResult.reason;
+      throw new MockWSError(serverResult.reason, 'Mock server failed');
     }
 
     return clientResult.value;
