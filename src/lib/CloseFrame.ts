@@ -1,4 +1,4 @@
 export interface CloseFrame {
   readonly code?: number;
-  readonly reason?: Buffer;
+  readonly reason?: Buffer | string;
 }
