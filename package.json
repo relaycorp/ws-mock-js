@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "buffer-to-arraybuffer": "0.0.6",
-    "verror": "^1.10.1",
     "ws": "^7.5.3"
   },
   "peerDependencies": {
@@ -41,7 +40,6 @@
   },
   "devDependencies": {
     "@relaycorp/shared-config": "^1.7.0",
-    "@types/verror": "^1.10.5",
     "@types/ws": "^8.5.3",
     "del-cli": "^4.0.1",
     "npm-run-all": "^4.1.5",
