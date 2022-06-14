@@ -31,7 +31,7 @@ export abstract class MockPeer {
     return this.ownCloseFrame !== null || this.wasAborted;
   }
 
-  public close(code: number = 1005, reason?: Buffer): void {
+  public close(code: number = 1005, reason?: Buffer | string): void {
     this.ownCloseFrame = { code, reason };
 
     this.peerWebSocket.emit('close', code, reason);
