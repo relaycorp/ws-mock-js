@@ -25,7 +25,7 @@
     "test": "exit 0",
     "test:integration": "exit 0",
     "cov": "run-s build test:unit && opn coverage/lcov-report/index.html",
-    "doc-api": "typedoc src/index.ts --out build/docs/api",
+    "doc-api": "typedoc src/index.ts --out build/docs",
     "clean": "del-cli build test"
   },
   "engines": {
