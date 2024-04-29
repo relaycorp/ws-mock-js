@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "buffer-to-arraybuffer": "0.0.6",
-    "ws": "^8.16.0"
+    "ws": "^8.17.0"
   },
   "peerDependencies": {
     "ws": ">= 7.4.1 < 8"
